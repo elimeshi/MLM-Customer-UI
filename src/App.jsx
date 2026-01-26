@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { SpendCapProvider } from './context/SpendCapContext';
+import DashboardLayout from './layouts/DashboardLayout';
+import Gauge from './components/Gauge';
+import TreeVisualization from './components/TreeVisualization';
+import StorefrontBridge from './components/StorefrontBridge';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <SpendCapProvider>
+      <DashboardLayout>
+
+        {/* Top Row: Gauge & Storefront */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Gauge - Takes 1 column */}
+          <div className="lg:col-span-1">
+            <Gauge />
+          </div>
+
+          {/* Storefront - Takes 2 columns */}
+          <div className="lg:col-span-2">
+            <StorefrontBridge />
+            <div className="mt-8 bg-gray-900 border border-gray-800 rounded-2xl p-6">
+              <h3 className="text-white font-bold mb-2">Platform Announcements</h3>
+              <p className="text-gray-400 text-sm">
+                Welcome to the Project Gem Beta! Your spend cap is active.
+                Remember that commissions are locked until your personal spend matches them.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Row: Network Tree */}
+        <div className="w-full">
+          <h3 className="text-xl font-bold text-white mb-4">Network Visualization</h3>
+          <TreeVisualization />
+        </div>
+
+      </DashboardLayout>
+    </SpendCapProvider>
+  );
 }
 
-export default App
+export default App;
