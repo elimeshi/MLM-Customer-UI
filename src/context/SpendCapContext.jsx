@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const SpendCapContext = createContext();
 
@@ -11,56 +11,116 @@ export const useCommission = () => {
 };
 
 export const SpendCapProvider = ({ children }) => {
-    // Mock Data State
-    const [personalSpend, setPersonalSpend] = useState(150.00); // User bought $150 worth of items
-    const [commissions, setCommissions] = useState([
-        { id: 1, amount: 50.00, status: 'cleared', source: 'User A' },
-        { id: 2, amount: 120.00, status: 'cleared', source: 'User B' },
-        { id: 3, amount: 300.00, status: 'pending', source: 'User C' }, // In holding period
-        { id: 4, amount: 80.00, status: 'cleared', source: 'User D' },
-    ]);
+    const [userId, setUserId] = useState(null); // Will be set by Login
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    const stats = useMemo(() => {
-        // 1. Calculate Total Cleared Earnings (Potential)
-        const totalCleared = commissions
-            .filter(c => c.status === 'cleared')
-            .reduce((acc, curr) => acc + curr.amount, 0);
+    const [stats, setStats] = useState({
+        personalSpend: 0,
+        totalCleared: 0,
+        pendingCommission: 0,
+        claimableCommission: 0,
+        lockedCommission: 0,
+        capUsage: 0
+    });
 
-        // 2. Calculate Pending Commission
-        const pendingCommission = commissions
-            .filter(c => c.status === 'pending')
-            .reduce((acc, curr) => acc + curr.amount, 0);
+    const fetchBalance = async (id) => {
+        if (!id) return;
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/user/${id}/balance`);
+            if (!res.ok) throw new Error('Failed to fetch balance');
 
-        // 3. The Spend-Cap Logic
-        // Earnable is capped by PersonalSpend
-        const claimableCommission = Math.min(totalCleared, personalSpend);
+            const data = await res.json();
 
-        // 4. Locked Commission (Excess earnings over the cap)
-        const lockedCommission = Math.max(0, totalCleared - personalSpend);
+            // Calculate derived stats from backend data
+            const personalSpend = data.total_spent;
+            const totalEarned = data.total_earned;
+            const pendingCommission = data.pending_pool;
 
-        return {
-            personalSpend,
-            totalCleared,
-            pendingCommission,
-            claimableCommission,
-            lockedCommission,
-            capUsage: personalSpend > 0 ? (claimableCommission / personalSpend) * 100 : 0
-        };
-    }, [personalSpend, commissions]);
+            // In this system, "total_earned" is money already successfully paid/credited to the user.
+            // So claimable + locked logic works a bit differently than the pure mocks.
+            // For the UI Gauge:
+            // "Claimable/Cleared" = total_earned (money you successfully got)
+            // "Locked" = pending_pool (money waiting for cap space)
 
-    const addSpend = (amount) => {
-        setPersonalSpend(prev => prev + amount);
+            // Re-interpreting backend logic for the UI:
+            // Backend: "pending_cap" commissions are commissions that TRIED to pay but couldn't.
+            // So `pending_pool` is effectively the "Locked/Missed" amount if we want to show it that way,
+            // OR it's money waiting in a holding tank. The backend implementation treats 'pending_cap' as potential.
+
+            const capUsage = personalSpend > 0 ? (totalEarned / personalSpend) * 100 : 0;
+
+            setStats({
+                personalSpend,
+                totalCleared: totalEarned, // Already paid out
+                pendingCommission: 0, // Not explicitly tracked in this backend simplified view other than pending_cap
+                claimableCommission: totalEarned, // For gauge
+                lockedCommission: pendingCommission, // Waiting for cap
+                capUsage
+            });
+
+        } catch (err) {
+            console.error(err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const addCommission = (amount, status = 'pending') => {
-        setCommissions(prev => [
-            ...prev,
-            { id: Date.now(), amount, status, source: 'New Sale' }
-        ]);
+    useEffect(() => {
+        if (userId) {
+            fetchBalance(userId);
+        }
+    }, [userId]);
+
+    const login = (id) => {
+        setUserId(id);
+        setError(null);
+    };
+
+    const logout = () => {
+        setUserId(null);
+        setStats({
+            personalSpend: 0,
+            totalCleared: 0,
+            pendingCommission: 0,
+            claimableCommission: 0,
+            lockedCommission: 0,
+            capUsage: 0
+        });
+    };
+
+    const addSpend = async (amount) => {
+        if (!userId) return;
+        setLoading(true);
+        try {
+            const res = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, amount })
+            });
+            if (!res.ok) throw new Error('Purchase failed');
+
+            // Refresh stats
+            await fetchBalance(userId);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <SpendCapContext.Provider value={{ ...stats, addSpend, addCommission }}>
+        <SpendCapContext.Provider value={{
+            ...stats,
+            userId,
+            loading,
+            error,
+            login,
+            logout,
+            addSpend
+        }}>
             {children}
         </SpendCapContext.Provider>
     );
