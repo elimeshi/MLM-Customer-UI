@@ -1,7 +1,6 @@
 import React from 'react';
 import { useCommission } from '../context/SpendCapContext';
 import { Lock, Unlock, TrendingUp } from 'lucide-react';
-import clsx from 'clsx';
 
 const Gauge = () => {
     const {
@@ -22,16 +21,16 @@ const Gauge = () => {
 
     return (
         <div className="bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-800 flex flex-col items-center relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500 opacity-50"></div>
+            <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-l from-blue-500 to-purple-500 opacity-50"></div>
 
-            <h3 className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-4">Earnings Capacity</h3>
+            <h3 className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-4">קיבולת רווחים</h3>
 
             <div className="relative flex items-center justify-center">
                 {/* SVG Gauge */}
                 <svg
                     height={radius * 2}
                     width={radius * 2}
-                    className="transform -rotate-90"
+                    className="transform rotate-90"
                 >
                     {/* Background Ring */}
                     <circle
@@ -55,7 +54,7 @@ const Gauge = () => {
                         cy={radius}
                     />
                     <defs>
-                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <linearGradient id="gradient" x1="100%" y1="0%" x2="0%" y2="0%">
                             <stop offset="0%" stopColor="#3b82f6" />
                             <stop offset="100%" stopColor="#a855f7" />
                         </linearGradient>
@@ -64,8 +63,8 @@ const Gauge = () => {
 
                 {/* Center Text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-bold text-white">${claimableCommission.toFixed(2)}</span>
-                    <span className="text-xs text-gray-500 mt-1">Claimable</span>
+                    <span className="text-3xl font-bold text-white">\${claimableCommission.toFixed(2)}</span>
+                    <span className="text-xs text-gray-500 mt-1">ניתן למשיכה</span>
                 </div>
             </div>
 
@@ -74,9 +73,9 @@ const Gauge = () => {
                 <div className="flex justify-between items-center text-sm p-3 bg-gray-800/50 rounded-lg border border-gray-700">
                     <div className="flex items-center gap-2">
                         <TrendingUp size={16} className="text-blue-400" />
-                        <span className="text-gray-300">Spend Cap Limit</span>
+                        <span className="text-gray-300">תקרת הוצאות</span>
                     </div>
-                    <span className="font-semibold text-white">${personalSpend.toFixed(2)}</span>
+                    <span className="font-semibold text-white">\${personalSpend.toFixed(2)}</span>
                 </div>
 
                 {/* Locked Warning */}
@@ -84,15 +83,15 @@ const Gauge = () => {
                     <div className="flex justify-between items-center text-sm p-3 bg-red-900/20 border border-red-800/50 rounded-lg animate-pulse">
                         <div className="flex items-center gap-2">
                             <Lock size={16} className="text-red-400" />
-                            <span className="text-gray-300">Locked</span>
+                            <span className="text-gray-300">נעול</span>
                         </div>
-                        <span className="font-semibold text-red-400">${lockedCommission.toFixed(2)}</span>
+                        <span className="font-semibold text-red-400">\${lockedCommission.toFixed(2)}</span>
                     </div>
                 ) : (
                     <div className="flex justify-between items-center text-sm p-3 bg-green-900/10 border border-green-800/30 rounded-lg">
                         <div className="flex items-center gap-2">
                             <Unlock size={16} className="text-green-500/70" />
-                            <span className="text-gray-400">Next Earnings Unlocked</span>
+                            <span className="text-gray-400">הרווחים הבאים ישוחררו</span>
                         </div>
                     </div>
                 )}

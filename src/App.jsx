@@ -21,10 +21,10 @@ function App() {
           <div className="lg:col-span-2">
             <StorefrontBridge />
             <div className="mt-8 bg-gray-900 border border-gray-800 rounded-2xl p-6">
-              <h3 className="text-white font-bold mb-2">Platform Announcements</h3>
+              <h3 className="text-white font-bold mb-2">הודעות פלטפורמה</h3>
               <p className="text-gray-400 text-sm">
-                Welcome to the Project Gem Beta! Your spend cap is active.
-                Remember that commissions are locked until your personal spend matches them.
+                ברוכים הבאים לגרסת הבטא של פרויקט יהלום! תקרת ההוצאות שלך פעילה.
+                זכור שהעמלות נעולות עד שההוצאה האישית שלך תהיה שווה להן.
               </p>
             </div>
           </div>
@@ -32,7 +32,7 @@ function App() {
 
         {/* Bottom Row: Network Tree */}
         <div className="w-full">
-          <h3 className="text-xl font-bold text-white mb-4">Network Visualization</h3>
+          <h3 className="text-xl font-bold text-white mb-4">ויזואליזציה של הרשת</h3>
           <TreeVisualization />
         </div>
 

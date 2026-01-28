@@ -13,13 +13,13 @@ const ProductCard = ({ product, onBuy, loading }) => (
         </div>
 
         <div className="flex items-center justify-between mt-auto">
-            <span className="text-lg font-bold text-white">${product.price}</span>
+            <span className="text-lg font-bold text-white">\${product.price}</span>
             <button
                 onClick={() => onBuy(product)}
                 disabled={loading}
                 className="bg-white text-gray-900 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                {loading ? '...' : 'Buy Now'}
+                {loading ? '...' : 'קנה עכשיו'}
             </button>
         </div>
     </div>
@@ -32,23 +32,23 @@ const StorefrontBridge = () => {
     const products = [
         {
             id: 1,
-            name: 'Starter Kit',
+            name: 'ערכת התחלה',
             price: 100,
-            description: 'Increases Cap by $100',
+            description: 'מגדיל את התקרה ב-$100',
             icon: <Package size={24} />
         },
         {
             id: 2,
-            name: 'Vip Bundle',
+            name: 'מארז VIP',
             price: 250,
-            description: 'Unlock higher tiers instantly',
+            description: 'שחרור דרגות גבוהות באופן מיידי',
             icon: <Star size={24} />
         },
         {
             id: 3,
-            name: 'Power Refill',
+            name: 'מילוי כוח',
             price: 50,
-            description: 'Quick $50 cap boost',
+            description: 'בוסט מהיר של $50',
             icon: <Zap size={24} />
         },
     ];
@@ -67,10 +67,10 @@ const StorefrontBridge = () => {
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-white font-bold flex items-center gap-2">
                     <ShoppingBag className="text-indigo-500" />
-                    Storefront Bridge
+                    גשר החנות
                 </h3>
                 <span className="text-xs text-indigo-400 font-medium px-2 py-1 bg-indigo-500/10 rounded-full border border-indigo-500/20">
-                    Increase Your Cap
+                    הגדל את התקרה שלך
                 </span>
             </div>
 
