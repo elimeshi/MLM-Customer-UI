@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+import { useAuth } from './AuthContext';
+
 const SpendCapContext = createContext();
 
 export const useCommission = () => {
@@ -11,7 +13,8 @@ export const useCommission = () => {
 };
 
 export const SpendCapProvider = ({ children }) => {
-    const [userId, setUserId] = useState(null); // Will be set by Login
+    const { dbUser, session, loading: authLoading } = useAuth();
+    const userId = dbUser?.id;
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -25,10 +28,14 @@ export const SpendCapProvider = ({ children }) => {
     });
 
     const fetchBalance = async (id) => {
-        if (!id) return;
+        if (!id || !session?.access_token) return;
         setLoading(true);
         try {
-            const res = await fetch(`/api/user/${id}/balance`);
+            const res = await fetch(`/api/user/${id}/balance`, {
+                headers: {
+                    'Authorization': `Bearer ${session.access_token}`
+                }
+            });
             if (!res.ok) throw new Error('Failed to fetch balance');
 
             const data = await res.json();
@@ -38,23 +45,12 @@ export const SpendCapProvider = ({ children }) => {
             const totalEarned = data.total_earned;
             const pendingCommission = data.pending_pool;
 
-            // In this system, "total_earned" is money already successfully paid/credited to the user.
-            // So claimable + locked logic works a bit differently than the pure mocks.
-            // For the UI Gauge:
-            // "Claimable/Cleared" = total_earned (money you successfully got)
-            // "Locked" = pending_pool (money waiting for cap space)
-
-            // Re-interpreting backend logic for the UI:
-            // Backend: "pending_cap" commissions are commissions that TRIED to pay but couldn't.
-            // So `pending_pool` is effectively the "Locked/Missed" amount if we want to show it that way,
-            // OR it's money waiting in a holding tank. The backend implementation treats 'pending_cap' as potential.
-
             const capUsage = personalSpend > 0 ? (totalEarned / personalSpend) * 100 : 0;
 
             setStats({
                 personalSpend,
                 totalCleared: totalEarned, // Already paid out
-                pendingCommission: 0, // Not explicitly tracked in this backend simplified view other than pending_cap
+                pendingCommission: 0,
                 claimableCommission: totalEarned, // For gauge
                 lockedCommission: pendingCommission, // Waiting for cap
                 capUsage
@@ -71,33 +67,28 @@ export const SpendCapProvider = ({ children }) => {
     useEffect(() => {
         if (userId) {
             fetchBalance(userId);
+        } else if (!authLoading) {
+            setStats({
+                personalSpend: 0,
+                totalCleared: 0,
+                pendingCommission: 0,
+                claimableCommission: 0,
+                lockedCommission: 0,
+                capUsage: 0
+            });
         }
-    }, [userId]);
-
-    const login = (id) => {
-        setUserId(id);
-        setError(null);
-    };
-
-    const logout = () => {
-        setUserId(null);
-        setStats({
-            personalSpend: 0,
-            totalCleared: 0,
-            pendingCommission: 0,
-            claimableCommission: 0,
-            lockedCommission: 0,
-            capUsage: 0
-        });
-    };
+    }, [userId, authLoading]);
 
     const addSpend = async (amount) => {
-        if (!userId) return;
+        if (!userId || !session?.access_token) return;
         setLoading(true);
         try {
             const res = await fetch('/api/orders', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
                 body: JSON.stringify({ user_id: userId, amount })
             });
             if (!res.ok) throw new Error('Purchase failed');
@@ -115,10 +106,8 @@ export const SpendCapProvider = ({ children }) => {
         <SpendCapContext.Provider value={{
             ...stats,
             userId,
-            loading,
+            loading: loading || authLoading,
             error,
-            login,
-            logout,
             addSpend
         }}>
             {children}

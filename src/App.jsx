@@ -8,6 +8,7 @@ import StorefrontBridge from './components/StorefrontBridge';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import LoginForm from './components/Auth/LoginForm';
 import RegisterForm from './components/Auth/RegisterForm';
+import ConfirmEmail from './components/Auth/ConfirmEmail';
 
 function Dashboard() {
   return (
@@ -49,6 +50,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
+        <Route path="/confirm-email" element={<ConfirmEmail />} />
         <Route
           path="/"
           element={

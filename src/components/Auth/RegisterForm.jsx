@@ -24,7 +24,23 @@ const RegisterForm = () => {
         setError(null);
         setLoading(true);
 
-        const { error } = await signUp({
+        if (referrerId) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/users/check/${referrerId}`);
+                if (!res.ok) {
+                    setError('The referrer ID provided does not exist.');
+                    setLoading(false);
+                    return;
+                }
+            } catch (err) {
+                console.error('Error validating referrer:', err);
+                setError('Could not validate referrer ID. Please try again.');
+                setLoading(false);
+                return;
+            }
+        }
+
+        const { data, error } = await signUp({
             email,
             password,
             options: {
@@ -38,10 +54,11 @@ const RegisterForm = () => {
         if (error) {
             setError(error.message);
             setLoading(false);
+        } else if (data?.user && data.user.identities?.length === 0) {
+            setError('An account with this email already exists.');
+            setLoading(false);
         } else {
-            // Usually Supabase sends a confirmation email. 
-            // In a real app, you might show a "Check your email" message.
-            navigate('/login?msg=check_email');
+            navigate('/confirm-email');
         }
     };
 

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, Users, ShoppingBag, Settings, LogOut, Gem } from 'lucide-react';
+import { LayoutDashboard, Users, ShoppingBag, Settings, LogOut, Gem, User, X, Mail, Shield, Hash } from 'lucide-react';
 import { useCommission } from '../context/SpendCapContext';
+
+import { useAuth } from '../context/AuthContext';
 
 const SidebarItem = ({ icon, label, active = false }) => (
     <button
         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${active
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+            : 'text-gray-400 hover:bg-gray-800 hover:text-white'
             }`}
     >
         {icon}
@@ -15,54 +17,9 @@ const SidebarItem = ({ icon, label, active = false }) => (
 );
 
 const DashboardLayout = ({ children }) => {
-    const { userId, login, logout, personalSpend, loading, error } = useCommission();
-    const [inputUserId, setInputUserId] = useState('');
-
-    const handleLogin = (e) => {
-        e.preventDefault();
-        if (inputUserId) login(inputUserId);
-    };
-
-    if (!userId) {
-        return (
-            <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-                <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 max-w-md w-full shadow-2xl">
-                    <div className="flex justify-center mb-6">
-                        <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-                            <Gem size={28} />
-                        </div>
-                    </div>
-                    <h2 className="text-2xl font-bold text-white text-center mb-2">ברוך הבא</h2>
-                    <p className="text-gray-400 text-center mb-8">הכנס את המזהה מפיץ שלך כדי להיכנס.</p>
-
-                    <form onSubmit={handleLogin} className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">מזהה משתמש</label>
-                            <input
-                                type="text"
-                                value={inputUserId}
-                                onChange={(e) => setInputUserId(e.target.value)}
-                                className="w-full bg-gray-950 border border-gray-800 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-right"
-                                placeholder="לדוגמה: 1"
-                                dir="ltr"
-                            />
-                        </div>
-                        {error && <div className="text-red-400 text-sm bg-red-900/20 p-3 rounded-lg border border-red-900/50">{error}</div>}
-                        <button
-                            type="submit"
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition-all shadow-lg shadow-indigo-600/20"
-                        >
-                            כנס ללוח הבקרה
-                        </button>
-                    </form>
-
-                    <div className="mt-6 text-center text-xs text-gray-500">
-                        פרויקט יהלום - פלטפורמת דמו MLM
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    const { userId, loading, error } = useCommission();
+    const { signOut, dbUser } = useAuth();
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     return (
         <div className="flex h-screen bg-gray-950 text-white overflow-hidden">
@@ -84,7 +41,7 @@ const DashboardLayout = ({ children }) => {
 
                 <div className="mt-auto pt-4 border-t border-gray-800">
                     <button
-                        onClick={logout}
+                        onClick={() => signOut()}
                         className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"
                     >
                         <LogOut size={20} />
@@ -103,17 +60,94 @@ const DashboardLayout = ({ children }) => {
                 <header className="h-16 border-b border-gray-800 bg-gray-900/50 backdrop-blur sticky top-0 z-30 flex items-center justify-between px-8">
                     <h2 className="text-gray-200 font-semibold">לוח בקרה</h2>
                     <div className="flex items-center gap-4">
-                        <div className="text-left hidden sm:block">
-                            <div className="text-sm font-medium text-white">משתמש #{userId}</div>
-                            <div className="text-xs text-gray-400">מפיץ</div>
-                        </div>
-                        <div className="w-10 h-10 rounded-full bg-gray-700 border border-gray-600 flex items-center justify-center text-gray-400">
-                            <Users size={20} />
-                        </div>
+                        <button
+                            onClick={() => setIsProfileOpen(true)}
+                            className="w-10 h-10 p-2 rounded-full bg-gray-700 border border-gray-600 flex items-center justify-center text-gray-400 hover:bg-gray-600 hover:text-white transition-all overflow-hidden group"
+                        >
+                            <User size={20} className="group-hover:scale-110 transition-transform" />
+                        </button>
                     </div>
                 </header>
 
+                {/* Profile Modal */}
+                {isProfileOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                            onClick={() => setIsProfileOpen(false)}
+                        ></div>
+                        <div className="relative w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                            <div className="p-6 border-b border-gray-800 flex items-center justify-between bg-gray-800/30">
+                                <h3 className="text-lg font-bold">פרופיל משתמש</h3>
+                                <button
+                                    onClick={() => setIsProfileOpen(false)}
+                                    className="group p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                                >
+                                    <X size={20} className='text-gray-900 group-hover:text-gray-50' />
+                                </button>
+                            </div>
+                            <div className="p-8 space-y-6">
+                                <div className="flex justify-center">
+                                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-xl">
+                                        <User size={48} />
+                                    </div>
+                                </div>
+                                <div className="text-center mb-8">
+                                    <h4 className="text-xl font-bold">{dbUser?.username || 'טוען...'}</h4>
+                                    <p className="text-gray-400 text-sm">{dbUser?.role === 'admin' ? 'מנהל מערכת' : 'מפיץ מורשה'}</p>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-4 p-4 bg-gray-800/50 rounded-xl border border-gray-700">
+                                        <div className="text-indigo-400">
+                                            <Mail size={20} />
+                                        </div>
+                                        <div>
+                                            <div className="text-xs text-gray-500">כתובת אימייל</div>
+                                            <div className="text-sm font-medium">{dbUser?.email || '...'}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-4 p-4 bg-gray-800/50 rounded-xl border border-gray-700">
+                                        <div className="text-purple-400">
+                                            <Hash size={20} />
+                                        </div>
+                                        <div>
+                                            <div className="text-xs text-gray-500">מזהה משתמש</div>
+                                            <div className="text-sm font-medium">{dbUser?.id || '...'}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-4 p-4 bg-gray-800/50 rounded-xl border border-gray-700">
+                                        <div className="text-emerald-400">
+                                            <Shield size={20} />
+                                        </div>
+                                        <div>
+                                            <div className="text-xs text-gray-500">תפקיד</div>
+                                            <div className="text-sm font-medium">{dbUser?.role || '...'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => signOut()}
+                                    className="w-full mt-4 flex items-center justify-center gap-2 p-4 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all font-bold"
+                                >
+                                    <LogOut size={20} />
+                                    <span>יציאה מהמערכת</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="p-8 max-w-7xl mx-auto space-y-8">
+                    {error && (
+                        <div className="bg-red-900/20 border border-red-500/30 text-red-400 p-4 rounded-xl flex items-center gap-3">
+                            <Settings size={20} />
+                            <p className="text-sm">{error}</p>
+                        </div>
+                    )}
                     {children}
                 </div>
             </main>

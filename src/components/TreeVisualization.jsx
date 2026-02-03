@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { X, User, DollarSign, TrendingUp } from 'lucide-react';
 import { useCommission } from '../context/SpendCapContext';
+import { useAuth } from '../context/AuthContext';
 
 // --- Styles ---
 // We'll use inline styles or Tailwind classes for the tree structure.
@@ -133,13 +134,18 @@ const CssTreeNode = ({ node, onNodeClick, selectedNodeId }) => {
 
 const TreeVisualization = () => {
     const { userId } = useCommission();
+    const { session } = useAuth();
     const [treeData, setTreeData] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
 
     const fetchTree = useCallback(async () => {
-        if (!userId) return;
+        if (!userId || !session?.access_token) return;
         try {
-            const res = await fetch(`/api/user/${userId}/descendants?depth=5`);
+            const res = await fetch(`/api/user/${userId}/descendants?depth=5`, {
+                headers: {
+                    'Authorization': `Bearer ${session.access_token}`
+                }
+            });
             const data = await res.json();
             // data should be an array of root nodes.
             // We will visualize "You" as the supreme root.
