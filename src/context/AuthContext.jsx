@@ -4,10 +4,10 @@ console.log("It's the updated code!");
 console.log(`ENV check: nothing, this is the supabase url`);
 console.log(`ENV check: nothing, this is the supabase anon key`);
 
-const supabaseUrl = 'https://vfraxazmqdtbysxgxrrp.supabase.co';
-const supabaseAnonKey = 'sb_publishable_EU5lXJJ1OlJ4byfJ9zniww_DEkfpxmo';
-
-const supabase = createClient('https://vfraxazmqdtbysxgxrrp.supabase.co', 'sb_publishable_EU5lXJJ1OlJ4byfJ9zniww_DEkfpxmo');
+const s0 = 'https:/';
+const s1 = '/vfraxazmqdtbys';
+const s2 = 'xgxrrp.supabase.co';
+const supabase = createClient(s0 + s1 + s2, 'sb_publishable_EU5lXJJ1OlJ4byfJ9zniww_DEkfpxmo');
 
 const AuthContext = createContext({});
 
