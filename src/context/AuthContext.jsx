@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
+console.log(`ENV check: ${import.meta.env.VITE_SUPABASE_URL}, this is the supabase url`);
+console.log(`ENV check: ${import.meta.env.VITE_SUPABASE_ANON_KEY}, this is the supabase anon key`);
+
 const supabaseUrl = 'https://vfraxazmqdtbysxgxrrp.supabase.co';
 const supabaseAnonKey = 'sb_publishable_EU5lXJJ1OlJ4byfJ9zniww_DEkfpxmo';
 
