@@ -31,7 +31,7 @@ export const SpendCapProvider = ({ children }) => {
         if (!id || !session?.access_token) return;
         setLoading(true);
         try {
-            const res = await fetch(`/api/user/${id}/balance`, {
+            const res = await fetch(`https://chakemeni-server-gudncvfab7fzewfe.israelcentral-01.azurewebsites.net/api/user/${id}/balance`, {
                 headers: {
                     'Authorization': `Bearer ${session.access_token}`
                 }
@@ -83,7 +83,7 @@ export const SpendCapProvider = ({ children }) => {
         if (!userId || !session?.access_token) return;
         setLoading(true);
         try {
-            const res = await fetch('/api/orders', {
+            const res = await fetch('https://chakemeni-server-gudncvfab7fzewfe.israelcentral-01.azurewebsites.net/api/orders', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
