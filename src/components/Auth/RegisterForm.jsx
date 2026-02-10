@@ -26,7 +26,7 @@ const RegisterForm = () => {
 
         if (referrerId) {
             try {
-                const res = await fetch(`${import.meta.env.VITE_SERVER_URL || 'https://chakemeni-server-gudncvfab7fzewfe.israelcentral-01.azurewebsites.net/'}/api/users/check/${referrerId}`);
+                const res = await fetch(`https://chakemeni-server-gudncvfab7fzewfe.israelcentral-01.azurewebsites.net/api/users/check/${referrerId}`);
                 if (!res.ok) {
                     setError('The referrer ID provided does not exist.');
                     setLoading(false);
