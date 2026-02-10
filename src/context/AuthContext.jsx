@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
     const fetchDbUser = async (jwt) => {
         if (!jwt) return;
         try {
-            const res = await fetch('http://localhost:3000/api/me', {
+            const res = await fetch(`${import.meta.env.SERVER_URL}/api/me`, {
                 headers: {
                     'Authorization': `Bearer ${jwt}`
                 }

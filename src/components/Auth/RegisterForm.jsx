@@ -26,7 +26,7 @@ const RegisterForm = () => {
 
         if (referrerId) {
             try {
-                const res = await fetch(`http://localhost:3000/api/users/check/${referrerId}`);
+                const res = await fetch(`${import.meta.env.SERVER_URL}/api/users/check/${referrerId}`);
                 if (!res.ok) {
                     setError('The referrer ID provided does not exist.');
                     setLoading(false);
