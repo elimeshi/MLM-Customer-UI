@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+const supabase = createClient(supabaseUrl || 'https://vfraxazmqdtbysxgxrrp.supabase.co', supabaseAnonKey || 'sb_publishable_EU5lXJJ1OlJ4byfJ9zniww_DEkfpxmo');
 
 const AuthContext = createContext({});
 
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
     const fetchDbUser = async (jwt) => {
         if (!jwt) return;
         try {
-            const res = await fetch(`${import.meta.env.SERVER_URL}/api/me`, {
+            const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/me`, {
                 headers: {
                     'Authorization': `Bearer ${jwt}`
                 }
