@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 console.log("It's the updated code!");
-console.log(`ENV check: nothing, this is the supabase url`);
-console.log(`ENV check: nothing, this is the supabase anon key`);
 
 const s0 = 'https:/';
 const s1 = '/vfraxazmqdtbys';
