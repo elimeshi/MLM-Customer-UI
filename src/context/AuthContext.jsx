@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 console.log("It's the updated code!");
-console.log(`ENV check: ${import.meta.env.VITE_SUPABASE_URL}, this is the supabase url`);
-console.log(`ENV check: ${import.meta.env.VITE_SUPABASE_ANON_KEY}, this is the supabase anon key`);
+console.log(`ENV check: nothing, this is the supabase url`);
+console.log(`ENV check: nothing, this is the supabase anon key`);
 
 const supabaseUrl = 'https://vfraxazmqdtbysxgxrrp.supabase.co';
 const supabaseAnonKey = 'sb_publishable_EU5lXJJ1OlJ4byfJ9zniww_DEkfpxmo';
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
     const fetchDbUser = async (jwt) => {
         if (!jwt) return;
         try {
-            const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/me`, {
+            const res = await fetch(`https://chakemeni-server-gudncvfab7fzewfe.israelcentral-01.azurewebsites.net/api/me`, {
                 headers: {
                     'Authorization': `Bearer ${jwt}`
                 }
