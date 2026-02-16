@@ -185,12 +185,16 @@ const TreeVisualization = () => {
         <div className="h-[600px] w-full bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-2xl relative flex">
             {/* CSS for Tree Structure */}
             <style>{`
+            .tree-container {
+                scroll-snap-type: x mandatory;
+            }
             /* Remove default ul/li styles */
             .tree-container ul {
                 display: flex;
                 padding-top: 20px; 
                 position: relative;
                 transition: all 0.5s;
+                scroll-snap-align: center;
             }
             .tree-container li {
                 float: left; text-align: center;
@@ -270,7 +274,7 @@ const TreeVisualization = () => {
             </div>
 
             {/* Tree Usage */}
-            <div className="flex-1 overflow-auto p-10 flex justify-center tree-container bg-dots">
+            <div className="flex-1 overflow-auto p-10 flex justify-start tree-container bg-dots">
                 <ul className="flex root-ul">
                     {treeData.map(root => (
                         <CssTreeNode key={root.id} node={root} onNodeClick={onNodeClick} selectedNodeId={selectedNode?.id} />
