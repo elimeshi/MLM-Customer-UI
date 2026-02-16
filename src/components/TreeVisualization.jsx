@@ -137,6 +137,7 @@ const TreeVisualization = () => {
     const { session } = useAuth();
     const [treeData, setTreeData] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
+    const treeRef = useRef(null);
 
     const fetchTree = useCallback(async () => {
         if (!userId || !session?.access_token) return;
@@ -165,6 +166,12 @@ const TreeVisualization = () => {
 
     useEffect(() => {
         fetchTree();
+        const treeContainer = treeRef.current;
+        if (treeContainer) {
+            const scrollWidth = treeContainer.scrollWidth;
+            const clientWidth = treeContainer.clientWidth;
+            treeContainer.scrollLeft = (scrollWidth - clientWidth) / 2;
+        }
     }, [fetchTree]);
 
     const onNodeClick = (node) => {
@@ -274,7 +281,7 @@ const TreeVisualization = () => {
             </div>
 
             {/* Tree Usage */}
-            <div className="flex-1 overflow-auto p-10 flex justify-start tree-container bg-dots">
+            <div ref={treeRef} className="flex-1 overflow-auto p-10 flex justify-start tree-container bg-dots">
                 <ul className="flex root-ul">
                     {treeData.map(root => (
                         <CssTreeNode key={root.id} node={root} onNodeClick={onNodeClick} selectedNodeId={selectedNode?.id} />
