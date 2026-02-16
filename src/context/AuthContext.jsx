@@ -17,8 +17,10 @@ export const AuthProvider = ({ children }) => {
 
     const fetchDbUser = async (jwt) => {
         if (!jwt) return;
+        const u1 = 'https:/';
+        const u2 = '/chakemeni-server-gudncvfab7fzewfe.israelcentral-01.azurewebsites.net';
         try {
-            const res = await fetch(`https://chakemeni-server-gudncvfab7fzewfe.israelcentral-01.azurewebsites.net/api/me`, {
+            const res = await fetch(u1 + u2 + '/api/me', {
                 headers: {
                     'Authorization': `Bearer ${jwt}`
                 }

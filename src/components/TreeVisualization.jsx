@@ -141,7 +141,7 @@ const TreeVisualization = () => {
     const fetchTree = useCallback(async () => {
         if (!userId || !session?.access_token) return;
         try {
-            const res = await fetch(`${import.meta.env.VITE_SERVER_URL || 'https://chakemeni-server-gudncvfab7fzewfe.israelcentral-01.azurewebsites.net'}/api/user/${userId}/descendants?depth=5`, {
+            const res = await fetch(`https://chakemeni-server-gudncvfab7fzewfe.israelcentral-01.azurewebsites.net/api/user/${userId}/descendants?depth=5`, {
                 headers: {
                     'Authorization': `Bearer ${session.access_token}`
                 }
